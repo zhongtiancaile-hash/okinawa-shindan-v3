@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたの沖縄診断</title>
+<style>
+  :root {
+    --coral: #FF6B5C;
+    --emerald: #00C2A8;
+    --yellow: #FFE66D;
+    --ink: #2B2B3D;
+    --cream: #FFF9F0;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ambient decoration */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.35;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .blob1 { width: 280px; height: 280px; background: var(--emerald); top: -80px; left: -80px; }
+  .blob2 { width: 240px; height: 240px; background: var(--coral); bottom: -60px; right: -60px; }
+  .blob3 { width: 160px; height: 160px; background: var(--yellow); top: 40%; right: -40px; }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: var(--white);
+    border-radius: 28px;
+    max-width: 480px;
+    width: 100%;
+    padding: 40px 32px;
+    box-shadow: 0 12px 40px rgba(43, 43, 61, 0.12);
+    text-align: center;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.4s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+
+  .sub {
+    font-size: 15px;
+    color: #6B6B7D;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .hero-mark {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 20px;
+  }
+
+  .btn {
+    display: inline-block;
+    background: var(--coral);
+    color: var(--white);
+    font-weight: 800;
+    font-size: 16px;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 36px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 6px 0 #D9483A;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #D9483A; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border: 2px solid #E6E2D8;
+    box-shadow: none;
+    font-size: 14px;
+    padding: 12px 28px;
+  }
+  .btn-outline:hover { transform: none; border-color: var(--coral); color: var(--coral); }
+
+  /* progress bar */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .progress-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #9A96A8;
+    white-space: nowrap;
+  }
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: #F0EDE4;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--emerald), var(--coral));
+    border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+
+  .q-text {
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .choice {
+    text-align: left;
+    background: var(--cream);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .choice:hover {
+    border-color: var(--emerald);
+    background: #F0FBF9;
+    transform: scale(1.02);
+  }
+  .choice:active { transform: scale(0.98); }
+
+  /* result screen */
+  .result-badge {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--emerald), var(--coral));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .result-badge span { font-size: 44px; }
+
+  .result-pre {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--emerald);
+    margin-bottom: 4px;
+  }
+
+  .result-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    color: #5A5768;
+    line-height: 1.8;
+    text-align: left;
+    background: var(--cream);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .cta-banner {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 20px;
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .cta-banner .date {
+    color: var(--yellow);
+  }
+
+  .action-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  footer-note {
+    display: block;
+    font-size: 11px;
+    color: #B3AFC0;
+    margin-top: 18px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div class="card">
+
+  <!-- START SCREEN -->
+  <div class="screen active" id="screen-start">
+    <svg class="hero-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="48" fill="#FFE66D"/>
+      <path d="M15 55 Q30 40 50 55 Q70 70 85 55" stroke="#00C2A8" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <path d="M15 68 Q30 53 50 68 Q70 83 85 68" stroke="#FF6B5C" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <circle cx="50" cy="32" r="10" fill="#2B2B3D"/>
+    </svg>
+    <span class="eyebrow">4問・1分でわかる</span>
+    <h1>あなたの沖縄、<br>何タイプ？</h1>
+    <p class="sub">大切にしてる沖縄の姿は人それぞれ。<br>4つの質問で、あなたの暮らしに一番近い「沖縄」を見つけよう。</p>
+    <button class="btn" onclick="startQuiz()">診断スタート</button>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div class="screen" id="screen-question">
+    <div class="progress-wrap">
+      <span class="progress-label" id="progress-label">Q1 / 4</span>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+    </div>
+    <p class="q-text" id="q-text"></p>
+    <div class="choices" id="q-choices"></div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="screen-result">
+    <div class="result-badge"><span id="result-emoji">🌊</span></div>
+    <p class="result-pre">あなたの沖縄は</p>
+    <h2 class="result-title" id="result-title"></h2>
+    <p class="result-desc" id="result-desc"></p>
+    <div class="cta-banner">その沖縄、<span class="date">9月13日</span>に動く。</div>
+    <div class="action-row">
+      <button class="btn" onclick="makeCaption()">Instagramキャプションを作る ↗</button>
+      <button class="btn btn-outline" onclick="restartQuiz()">もう一度やってみる</button>
+    </div>
+    <footer-note>※このコンテンツは仮の設問・結果案です。内容は今後変更されます。</footer-note>
+  </div>
+
+  <!-- CAPTION SCREEN -->
+  <div class="screen" id="screen-caption">
+    <span class="eyebrow">投稿用テキスト</span>
+    <h1 style="font-size:20px;">そのままコピペでOK</h1>
+    <p class="result-desc" id="caption-text" style="font-size:14px; white-space:pre-wrap;"></p>
+    <div class="action-row">
+      <button class="btn" onclick="copyCaption()">コピーする</button>
+      <button class="btn btn-outline" onclick="backToResult()">結果に戻る</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ---- 仮データ：設問・選択肢・タイプ判定はあとで自由に変更可 ----
+  const questions = [
+    {
+      text: "Q1. 休日、心がほどける場所は？",
+      choices: [
+        { label: "人の少ない静かな海辺", type: "umi" },
+        { label: "地元の人で賑わう市場", type: "machi" },
+        { label: "緑が深い山や森", type: "yama" },
+        { label: "家でゆっくり過ごす", type: "kurashi" },
+      ]
+    },
+    {
+      text: "Q2. 沖縄の「いいな」と思う瞬間は？",
+      choices: [
+        { label: "夕方、誰かと喋りながら歩く時間", type: "machi" },
+        { label: "波の音だけが聞こえる時間", type: "umi" },
+        { label: "知らない道を歩いて発見がある時間", type: "yama" },
+        { label: "家族や友達とご飯を食べる時間", type: "kurashi" },
+      ]
+    },
+    {
+      text: "Q3. これからの沖縄に期待したいことは？",
+      choices: [
+        { label: "自然をできるだけ残してほしい", type: "umi" },
+        { label: "若い人が挑戦しやすい場所であってほしい", type: "machi" },
+        { label: "暮らしと自然のバランスが取れてほしい", type: "yama" },
+        { label: "今の暮らしが安心して続いてほしい", type: "kurashi" },
+      ]
+    },
+    {
+      text: "Q4. 自分を一言でいうと？",
+      choices: [
+        { label: "じっくりタイプ", type: "umi" },
+        { label: "にぎやか好きタイプ", type: "machi" },
+        { label: "探検好きタイプ", type: "yama" },
+        { label: "安定志向タイプ", type: "kurashi" },
+      ]
+    }
+  ];
+
+  const results = {
+    umi: {
+      emoji: "🌊",
+      title: "“静けさを守る” 沖縄派",
+      desc: "あなたが大切にしているのは、何もしなくても満たされる時間。今のままの海や空気が、これからもそこにあってほしい——そんな願いを持つあなたへ。"
+    },
+    machi: {
+      emoji: "🏮",
+      title: "“まちと一緒に育つ” 沖縄派",
+      desc: "あなたが大切にしているのは、人とのつながりや日々の賑わい。沖縄がこれからも挑戦できる場所であってほしい——そんな願いを持つあなたへ。"
+    },
+    yama: {
+      emoji: "🌿",
+      title: "“知って深まる” 沖縄派",
+      desc: "あなたが大切にしているのは、新しい発見や学び。暮らしと自然がうまく共存する沖縄であってほしい——そんな願いを持つあなたへ。"
+    },
+    kurashi: {
+      emoji: "🏠",
+      title: "“いつもの日常を守る” 沖縄派",
+      desc: "あなたが大切にしているのは、当たり前の毎日。今の暮らしが、これからも安心して続いていく沖縄であってほしい——そんな願いを持つあなたへ。"
+    }
+  };
+
+  let currentQ = 0;
+  let answers = [];
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function startQuiz() {
+    currentQ = 0;
+    answers = [];
+    renderQuestion();
+    showScreen('screen-question');
+  }
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    document.getElementById('progress-label').textContent = `Q${currentQ + 1} / ${questions.length}`;
+    document.getElementById('progress-fill').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+    document.getElementById('q-text').textContent = q.text;
+
+    const wrap = document.getElementById('q-choices');
+    wrap.innerHTML = '';
+    q.choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.textContent = choice.label;
+      btn.onclick = () => selectChoice(choice.type);
+      wrap.appendChild(btn);
+    });
+  }
+
+  function selectChoice(type) {
+    answers.push(type);
+    currentQ++;
+    if (currentQ < questions.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function tally(arr) {
+    const counts = {};
+    arr.forEach(t => counts[t] = (counts[t] || 0) + 1);
+    let best = arr[0], max = 0;
+    for (const k in counts) {
+      if (counts[k] > max) { max = counts[k]; best = k; }
+    }
+    return best;
+  }
+
+  let currentResultKey = 'umi';
+
+  function showResult() {
+    currentResultKey = tally(answers);
+    const r = results[currentResultKey];
+    document.getElementById('result-emoji').textContent = r.emoji;
+    document.getElementById('result-title').textContent = r.title;
+    document.getElementById('result-desc').textContent = r.desc;
+    showScreen('screen-result');
+  }
+
+  function restartQuiz() {
+    startQuiz();
+  }
+
+  function makeCaption() {
+    const r = results[currentResultKey];
+    const text = `${r.title} でした🌺\n\n${r.desc}\n\nあなたの沖縄はどんなタイプ？\n診断はこちら👉(URLを入れる)\n\n#沖縄県知事選 #913 #あなたの沖縄診断`;
+    document.getElementById('caption-text').textContent = text;
+    showScreen('screen-caption');
+  }
+
+  function backToResult() {
+    showScreen('screen-result');
+  }
+
+  function copyCaption() {
+    const text = document.getElementById('caption-text').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      alert('コピーしました！');
+    }).catch(() => {
+      alert('コピーに失敗しました。テキストを選択して手動でコピーしてください。');
+    });
+  }
+</script>
+
+</body>
+</html>
