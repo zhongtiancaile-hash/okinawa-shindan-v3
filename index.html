@@ -4,20 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>あなたの沖縄診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --coral: #FF6B5C;
-    --emerald: #00C2A8;
-    --yellow: #FFE66D;
-    --ink: #2B2B3D;
-    --cream: #FFF9F0;
+    --pink: #E6347A;
+    --red: #EE4036;
+    --yellow: #FFD23F;
+    --yellow-soft: #FFF1C2;
+    --ink: #3A2C3E;
+    --cream: #FFFBF2;
     --white: #FFFFFF;
+    --line: #F3E3D8;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    font-family: "Noto Sans JP", sans-serif;
     background: var(--cream);
     color: var(--ink);
     min-height: 100vh;
@@ -29,18 +34,21 @@
     overflow-x: hidden;
   }
 
+  .hand {
+    font-family: "Klee One", sans-serif;
+  }
+
   /* ambient decoration */
   .blob {
     position: fixed;
     border-radius: 50%;
-    filter: blur(40px);
-    opacity: 0.35;
+    filter: blur(50px);
+    opacity: 0.4;
     z-index: 0;
     pointer-events: none;
   }
-  .blob1 { width: 280px; height: 280px; background: var(--emerald); top: -80px; left: -80px; }
-  .blob2 { width: 240px; height: 240px; background: var(--coral); bottom: -60px; right: -60px; }
-  .blob3 { width: 160px; height: 160px; background: var(--yellow); top: 40%; right: -40px; }
+  .blob1 { width: 300px; height: 300px; background: var(--yellow); top: -100px; left: -100px; }
+  .blob2 { width: 260px; height: 260px; background: var(--pink); bottom: -80px; right: -80px; opacity: 0.25; }
 
   .card {
     position: relative;
@@ -50,9 +58,9 @@
     max-width: 480px;
     width: 100%;
     padding: 40px 32px;
-    box-shadow: 0 12px 40px rgba(43, 43, 61, 0.12);
+    box-shadow: 0 14px 44px rgba(58, 44, 62, 0.14);
     text-align: center;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    border: 3px solid var(--white);
   }
 
   .screen { display: none; }
@@ -63,96 +71,132 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ===== START SCREEN ===== */
   .eyebrow {
     display: inline-block;
     background: var(--yellow);
     color: var(--ink);
-    font-weight: 700;
+    font-weight: 900;
     font-size: 13px;
-    padding: 6px 14px;
+    padding: 7px 16px;
     border-radius: 999px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+    letter-spacing: 0.02em;
   }
 
-  h1 {
-    font-size: 26px;
-    font-weight: 800;
-    line-height: 1.4;
-    margin-bottom: 12px;
+  .start-title {
+    font-family: "Klee One", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .start-title .accent {
+    color: var(--pink);
+    position: relative;
+    display: inline-block;
+  }
+  .start-title .underline-mark {
+    position: relative;
+    display: inline-block;
+  }
+  .start-title .underline-mark::after {
+    content: "";
+    position: absolute;
+    left: -2%;
+    right: -2%;
+    bottom: 2px;
+    height: 10px;
+    background: var(--yellow);
+    z-index: -1;
+    opacity: 0.7;
+    border-radius: 4px;
   }
 
-  .sub {
+  .start-sub {
     font-size: 15px;
-    color: #6B6B7D;
-    line-height: 1.6;
-    margin-bottom: 28px;
+    color: #8A7B8C;
+    line-height: 1.7;
+    margin: 18px 0 30px;
   }
 
   .hero-mark {
-    width: 88px;
-    height: 88px;
-    margin: 0 auto 20px;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 18px;
   }
 
   .btn {
     display: inline-block;
-    background: var(--coral);
+    background: var(--pink);
     color: var(--white);
-    font-weight: 800;
-    font-size: 16px;
+    font-weight: 900;
+    font-size: 17px;
     border: none;
     border-radius: 999px;
-    padding: 16px 36px;
+    padding: 17px 40px;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 6px 0 #D9483A;
+    box-shadow: 0 6px 0 #B81F58;
+    font-family: "Noto Sans JP", sans-serif;
   }
   .btn:hover { transform: translateY(-2px); }
-  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #D9483A; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #B81F58; }
 
   .btn-outline {
     background: transparent;
     color: var(--ink);
-    border: 2px solid #E6E2D8;
+    border: 2px solid var(--line);
     box-shadow: none;
     font-size: 14px;
-    padding: 12px 28px;
+    padding: 13px 28px;
   }
-  .btn-outline:hover { transform: none; border-color: var(--coral); color: var(--coral); }
+  .btn-outline:hover { transform: none; border-color: var(--pink); color: var(--pink); }
 
-  /* progress bar */
+  .start-meta {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #B3A4B5;
+    font-weight: 700;
+  }
+
+  /* ===== QUESTION SCREEN ===== */
   .progress-wrap {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 24px;
+    margin-bottom: 26px;
   }
   .progress-label {
     font-size: 12px;
-    font-weight: 700;
-    color: #9A96A8;
+    font-weight: 900;
+    color: var(--pink);
     white-space: nowrap;
+    font-family: "Klee One", sans-serif;
   }
   .progress-track {
     flex: 1;
-    height: 8px;
-    background: #F0EDE4;
+    height: 9px;
+    background: var(--yellow-soft);
     border-radius: 999px;
     overflow: hidden;
   }
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--emerald), var(--coral));
+    background: linear-gradient(90deg, var(--yellow), var(--pink));
     border-radius: 999px;
     transition: width 0.35s ease;
   }
 
   .q-text {
-    font-size: 19px;
-    font-weight: 800;
-    line-height: 1.5;
-    margin-bottom: 24px;
+    font-family: "Klee One", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.6;
+    margin-bottom: 26px;
     text-align: left;
+    color: var(--ink);
   }
 
   .choices {
@@ -164,72 +208,73 @@
   .choice {
     text-align: left;
     background: var(--cream);
-    border: 2px solid transparent;
+    border: 2px solid var(--line);
     border-radius: 16px;
-    padding: 16px 18px;
+    padding: 17px 18px;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--ink);
     cursor: pointer;
     transition: all 0.15s ease;
+    font-family: "Noto Sans JP", sans-serif;
   }
   .choice:hover {
-    border-color: var(--emerald);
-    background: #F0FBF9;
+    border-color: var(--pink);
+    background: #FFF0F5;
     transform: scale(1.02);
   }
   .choice:active { transform: scale(0.98); }
 
-  /* result screen */
-  .result-badge {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 16px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--emerald), var(--coral));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* ===== RESULT SCREEN ===== */
+  .result-icon-wrap {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 18px;
   }
-  .result-badge span { font-size: 44px; }
 
   .result-pre {
     font-size: 13px;
-    font-weight: 700;
-    color: var(--emerald);
-    margin-bottom: 4px;
+    font-weight: 900;
+    color: var(--pink);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
   }
 
   .result-title {
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 14px;
-    line-height: 1.4;
+    font-family: "Klee One", sans-serif;
+    font-size: 27px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    line-height: 1.5;
+    color: var(--ink);
   }
 
   .result-desc {
-    font-size: 14px;
-    color: #5A5768;
-    line-height: 1.8;
+    font-size: 14.5px;
+    color: #5A4C5C;
+    line-height: 1.9;
     text-align: left;
     background: var(--cream);
     border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 20px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
   }
 
-  .cta-banner {
-    background: var(--ink);
-    color: var(--white);
-    border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 20px;
-    font-weight: 800;
-    font-size: 16px;
-    line-height: 1.5;
+  .policy-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--yellow-soft);
+    color: #8A5A00;
+    font-weight: 900;
+    font-size: 12.5px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    margin-bottom: 24px;
   }
-  .cta-banner .date {
-    color: var(--yellow);
+  .policy-tag::before {
+    content: "📌";
+    font-size: 13px;
   }
 
   .action-row {
@@ -238,11 +283,18 @@
     gap: 10px;
   }
 
-  footer-note {
+  .footer-note {
     display: block;
     font-size: 11px;
-    color: #B3AFC0;
-    margin-top: 18px;
+    color: #C7B9C8;
+    margin-top: 20px;
+  }
+
+  /* ===== CAPTION SCREEN ===== */
+  .caption-box {
+    font-size: 14px;
+    white-space: pre-wrap;
+    text-align: left;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -254,22 +306,25 @@
 
 <div class="blob blob1"></div>
 <div class="blob blob2"></div>
-<div class="blob blob3"></div>
 
 <div class="card">
 
   <!-- START SCREEN -->
   <div class="screen active" id="screen-start">
     <svg class="hero-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="48" fill="#FFE66D"/>
-      <path d="M15 55 Q30 40 50 55 Q70 70 85 55" stroke="#00C2A8" stroke-width="6" stroke-linecap="round" fill="none"/>
-      <path d="M15 68 Q30 53 50 68 Q70 83 85 68" stroke="#FF6B5C" stroke-width="6" stroke-linecap="round" fill="none"/>
-      <circle cx="50" cy="32" r="10" fill="#2B2B3D"/>
+      <circle cx="50" cy="50" r="46" fill="#FFD23F"/>
+      <path d="M12 56 Q28 40 50 56 Q72 72 88 56" stroke="#E6347A" stroke-width="7" stroke-linecap="round" fill="none"/>
+      <path d="M12 70 Q28 54 50 70 Q72 86 88 70" stroke="#EE4036" stroke-width="7" stroke-linecap="round" fill="none"/>
+      <circle cx="50" cy="30" r="11" fill="#3A2C3E"/>
     </svg>
-    <span class="eyebrow">4問・1分でわかる</span>
-    <h1>あなたの沖縄、<br>何タイプ？</h1>
-    <p class="sub">大切にしてる沖縄の姿は人それぞれ。<br>4つの質問で、あなたの暮らしに一番近い「沖縄」を見つけよう。</p>
-    <button class="btn" onclick="startQuiz()">診断スタート</button>
+    <span class="eyebrow">4つの質問・1分でわかる</span>
+    <h1 class="start-title hand">
+      あなたの<span class="underline-mark">沖縄</span>は<br>
+      <span class="accent">何タイプ？</span>
+    </h1>
+    <p class="start-sub">大切にしてる沖縄の姿は、人それぞれ。<br>4つの質問に答えて、あなたの「沖縄」を見つけよう。</p>
+    <button class="btn" onclick="startQuiz()">診断スタート ✏️</button>
+    <p class="start-meta">SNSでシェアできる結果つき</p>
   </div>
 
   <!-- QUESTION SCREEN -->
@@ -284,23 +339,23 @@
 
   <!-- RESULT SCREEN -->
   <div class="screen" id="screen-result">
-    <div class="result-badge"><span id="result-emoji">🌊</span></div>
+    <div class="result-icon-wrap" id="result-icon"></div>
     <p class="result-pre">あなたの沖縄は</p>
-    <h2 class="result-title" id="result-title"></h2>
+    <h2 class="result-title hand" id="result-title"></h2>
     <p class="result-desc" id="result-desc"></p>
-    <div class="cta-banner">その沖縄、<span class="date">9月13日</span>に動く。</div>
+    <div class="policy-tag" id="result-policy"></div>
     <div class="action-row">
       <button class="btn" onclick="makeCaption()">Instagramキャプションを作る ↗</button>
       <button class="btn btn-outline" onclick="restartQuiz()">もう一度やってみる</button>
     </div>
-    <footer-note>※このコンテンツは仮の設問・結果案です。内容は今後変更されます。</footer-note>
+    <span class="footer-note">※このコンテンツは検討中の案です。内容は今後変更されます。</span>
   </div>
 
   <!-- CAPTION SCREEN -->
   <div class="screen" id="screen-caption">
     <span class="eyebrow">投稿用テキスト</span>
-    <h1 style="font-size:20px;">そのままコピペでOK</h1>
-    <p class="result-desc" id="caption-text" style="font-size:14px; white-space:pre-wrap;"></p>
+    <h1 class="start-title hand" style="font-size:22px;">そのままコピペでOK</h1>
+    <p class="result-desc caption-box" id="caption-text"></p>
     <div class="action-row">
       <button class="btn" onclick="copyCaption()">コピーする</button>
       <button class="btn btn-outline" onclick="backToResult()">結果に戻る</button>
@@ -310,71 +365,108 @@
 </div>
 
 <script>
-  // ---- 仮データ：設問・選択肢・タイプ判定はあとで自由に変更可 ----
+  // ---- 設問・選択肢：既存v2の内容を使用 ----
   const questions = [
     {
-      text: "Q1. 休日、心がほどける場所は？",
+      text: "Q1. 沖縄で「なくなったら嫌だな」と思うものは？",
       choices: [
-        { label: "人の少ない静かな海辺", type: "umi" },
-        { label: "地元の人で賑わう市場", type: "machi" },
-        { label: "緑が深い山や森", type: "yama" },
-        { label: "家でゆっくり過ごす", type: "kurashi" },
+        { label: "サンゴ礁と青い海", type: "umi" },
+        { label: "首里城と琉球文化", type: "rekishi" },
+        { label: "地元で働ける場所", type: "keizai" },
+        { label: "子どもが笑顔でいられる日常", type: "tunagari" },
       ]
     },
     {
-      text: "Q2. 沖縄の「いいな」と思う瞬間は？",
+      text: "Q2. 沖縄の10年後、一番期待することは？",
       choices: [
-        { label: "夕方、誰かと喋りながら歩く時間", type: "machi" },
-        { label: "波の音だけが聞こえる時間", type: "umi" },
-        { label: "知らない道を歩いて発見がある時間", type: "yama" },
-        { label: "家族や友達とご飯を食べる時間", type: "kurashi" },
+        { label: "世界自然遺産の自然が守られている", type: "umi" },
+        { label: "観光も文化もさらに豊かになっている", type: "rekishi" },
+        { label: "若者が沖縄で稼いで暮らせている", type: "keizai" },
+        { label: "子育てしやすい島になっている", type: "tunagari" },
       ]
     },
     {
-      text: "Q3. これからの沖縄に期待したいことは？",
+      text: "Q3. 最近、沖縄で気になるニュースは？",
       choices: [
-        { label: "自然をできるだけ残してほしい", type: "umi" },
-        { label: "若い人が挑戦しやすい場所であってほしい", type: "machi" },
-        { label: "暮らしと自然のバランスが取れてほしい", type: "yama" },
-        { label: "今の暮らしが安心して続いてほしい", type: "kurashi" },
+        { label: "サンゴや生き物の環境問題", type: "umi" },
+        { label: "首里城の復興の進み具合", type: "rekishi" },
+        { label: "企業誘致や雇用・給料の話", type: "keizai" },
+        { label: "子どもの貧困や医療・福祉の話", type: "tunagari" },
       ]
     },
     {
-      text: "Q4. 自分を一言でいうと？",
+      text: "Q4. あなたにとって「いい沖縄」ってどんな島？",
       choices: [
-        { label: "じっくりタイプ", type: "umi" },
-        { label: "にぎやか好きタイプ", type: "machi" },
-        { label: "探検好きタイプ", type: "yama" },
-        { label: "安定志向タイプ", type: "kurashi" },
+        { label: "自然と共存できている島", type: "umi" },
+        { label: "歴史と文化が誇りになっている島", type: "rekishi" },
+        { label: "経済が自立して活気がある島", type: "keizai" },
+        { label: "誰一人取り残されない島", type: "tunagari" },
       ]
     }
   ];
 
+  // ---- 結果タイプ：既存v2の内容を使用 ----
   const results = {
     umi: {
-      emoji: "🌊",
-      title: "“静けさを守る” 沖縄派",
-      desc: "あなたが大切にしているのは、何もしなくても満たされる時間。今のままの海や空気が、これからもそこにあってほしい——そんな願いを持つあなたへ。"
+      title: "海と自然タイプ",
+      desc: "あなたが大切にしているのは、沖縄の青い海と豊かな自然。世界自然遺産に登録された森、サンゴ礁、そこに生きる命。\n\nその自然が守られるかどうか、実は誰かの決断にかかっている。",
+      policy: "県政テーマ：自然環境・生物多様性の保全",
+      icon: "umi"
     },
-    machi: {
-      emoji: "🏮",
-      title: "“まちと一緒に育つ” 沖縄派",
-      desc: "あなたが大切にしているのは、人とのつながりや日々の賑わい。沖縄がこれからも挑戦できる場所であってほしい——そんな願いを持つあなたへ。"
+    rekishi: {
+      title: "歴史と文化タイプ",
+      desc: "あなたが大切にしているのは、琉球から続く沖縄の歴史と文化。首里城、しまくとぅば、組踊、空手。\n\nその誇りを次の世代に渡せるかどうか、今がその分岐点。",
+      policy: "県政テーマ：首里城復興・沖縄文化の継承",
+      icon: "rekishi"
     },
-    yama: {
-      emoji: "🌿",
-      title: "“知って深まる” 沖縄派",
-      desc: "あなたが大切にしているのは、新しい発見や学び。暮らしと自然がうまく共存する沖縄であってほしい——そんな願いを持つあなたへ。"
+    keizai: {
+      title: "経済と仕事タイプ",
+      desc: "あなたが大切にしているのは、沖縄で働き、稼ぎ、生きていける未来。DXも、スタートアップも、賃上げも。\n\n沖縄が経済的に自立できるかどうか、そのカギは今ここにある。",
+      policy: "県政テーマ：自立型経済の構築・雇用・産業DX",
+      icon: "keizai"
     },
-    kurashi: {
-      emoji: "🏠",
-      title: "“いつもの日常を守る” 沖縄派",
-      desc: "あなたが大切にしているのは、当たり前の毎日。今の暮らしが、これからも安心して続いていく沖縄であってほしい——そんな願いを持つあなたへ。"
+    tunagari: {
+      title: "人とつながりタイプ",
+      desc: "あなたが大切にしているのは、子どもが安心して育ち、誰もが支え合える沖縄。貧困をなくし、医療を守り、老いも若きも。\n\n「誰一人取り残さない」という言葉を、現実にするのは今の選択。",
+      policy: "県政テーマ：こどもの貧困・子育て・医療福祉",
+      icon: "tunagari"
     }
+  };
+
+  const icons = {
+    umi: `<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="35" r="22" fill="#FFD23F"/>
+      <path d="M10 95 Q35 75 60 95 Q85 115 110 95 Q120 88 130 95" stroke="#E6347A" stroke-width="7" stroke-linecap="round" fill="none"/>
+      <rect x="0" y="100" width="140" height="40" fill="#9FD8DA"/>
+      <path d="M0 100 Q35 88 70 100 Q105 112 140 100 L140 105 Q105 117 70 105 Q35 93 0 105 Z" fill="#6FB8BC"/>
+    </svg>`,
+    rekishi: `<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="105" cy="32" r="20" fill="#FFD23F"/>
+      <rect x="35" y="95" width="70" height="35" rx="3" fill="#E8DCC8"/>
+      <rect x="42" y="70" width="56" height="28" rx="3" fill="#D8C9AE"/>
+      <rect x="50" y="50" width="40" height="23" rx="3" fill="#C8B696"/>
+      <rect x="58" y="32" width="24" height="20" rx="3" fill="#B8A484"/>
+      <path d="M20 130 Q70 118 120 130" stroke="#E6347A" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </svg>`,
+    keizai: `<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="108" cy="30" r="18" fill="#FFD23F"/>
+      <rect x="18" y="45" width="100" height="68" rx="10" fill="#FBE9E0"/>
+      <rect x="32" y="60" width="40" height="8" rx="4" fill="#EE4036"/>
+      <rect x="32" y="74" width="55" height="8" rx="4" fill="#E6347A"/>
+      <path d="M32 95 Q50 80 68 95 Q86 110 104 95" stroke="#3A2C3E" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.3"/>
+    </svg>`,
+    tunagari: `<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="108" cy="28" r="16" fill="#FFD23F"/>
+      <circle cx="40" cy="62" r="20" fill="#F3D8DE"/>
+      <circle cx="70" cy="52" r="26" fill="#E6347A"/>
+      <circle cx="100" cy="62" r="20" fill="#F3D8DE"/>
+      <path d="M22 105 Q70 85 118 105" stroke="#EE4036" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="2 8"/>
+    </svg>`
   };
 
   let currentQ = 0;
   let answers = [];
+  let currentResultKey = 'umi';
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -425,14 +517,13 @@
     return best;
   }
 
-  let currentResultKey = 'umi';
-
   function showResult() {
     currentResultKey = tally(answers);
     const r = results[currentResultKey];
-    document.getElementById('result-emoji').textContent = r.emoji;
+    document.getElementById('result-icon').innerHTML = icons[r.icon];
     document.getElementById('result-title').textContent = r.title;
     document.getElementById('result-desc').textContent = r.desc;
+    document.getElementById('result-policy').textContent = r.policy;
     showScreen('screen-result');
   }
 
@@ -442,7 +533,7 @@
 
   function makeCaption() {
     const r = results[currentResultKey];
-    const text = `${r.title} でした🌺\n\n${r.desc}\n\nあなたの沖縄はどんなタイプ？\n診断はこちら👉(URLを入れる)\n\n#沖縄県知事選 #913 #あなたの沖縄診断`;
+    const text = `あなたの沖縄は「${r.title}」でした🌺\n\n${r.desc}\n\nあなたの沖縄はどんなタイプ？\n診断はこちら👉(URLを入れる)\n\n#あなたの沖縄診断`;
     document.getElementById('caption-text').textContent = text;
     showScreen('screen-caption');
   }
